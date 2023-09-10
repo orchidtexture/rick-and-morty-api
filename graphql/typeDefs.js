@@ -10,7 +10,7 @@ const typeDefs = gql`
     """
     Get the list of all characters
     """
-    characters(page: Int): Characters
+    characters(page: Int, filter: FilterCharacter): Characters
 
     """
     Get a list of characters selected by ids

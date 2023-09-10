@@ -6,7 +6,7 @@ const { collection } = require('../utils/helpers')
 const { Schema } = mongoose
 
 const episodeSchema = new Schema({
-  id: Number,
+  id: String,
   name: String,
   episode: String,
   air_date: String,

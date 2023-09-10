@@ -6,7 +6,7 @@ const { collection } = require('../utils/helpers')
 const { Schema } = mongoose
 
 const locationSchema = new Schema({
-  id: Number,
+  id: String,
   name: String,
   type: String,
   dimension: String,

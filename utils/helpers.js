@@ -15,8 +15,8 @@ const collection = {
   limit: 20,
   queries: {
     character: ['id', 'name', 'status', 'species', 'type', 'gender'],
-    episode: ['name', 'episode'],
-    location: ['name', 'dimension', 'type'],
+    episode: ['id', 'name', 'episode'],
+    location: ['id', 'name', 'dimension', 'type'],
   },
 }
 
