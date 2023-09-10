@@ -1,43 +1,66 @@
 require('dotenv').config()
 
+const path = require('path')
 const express = require('express')
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 const { ApolloServer } = require('apollo-server-express')
-const { connect, default: mongoose } = require('mongoose')
-
-const { typeDefs } = require('./graphql/typeDefs')
-const { resolvers } = require('./graphql/resolvers')
-
-const db = process.env.DATABASE
 
 const app = express()
 
+const typeDefs = require('./graphql/typeDefs')
+const resolvers = require('./graphql/resolvers')
+const { Character, Location, Episode } = require('./graphql/sources')
+
+const handle = require('./handlers')
+const routes = require('./routes')
+
 async function start() {
-    // DB connection
+    const apolloServer = new ApolloServer({
+        typeDefs,
+        resolvers,
+        // validationRules: [handle.depth(1)],
+        dataSources: () => ({
+            character: new Character(),
+            location: new Location(),
+            episode: new Episode(),
+        }),
+        })
+
+    await apolloServer.start();
+
     try {
-        await connect(db)
-        console.log('mongodb connected')
+        console.log(process.env.DATABASE)
+        await mongoose.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true })
+        // mongoose.Promise = global.Promise
     } catch (error) {
         console.log(error)
     }
+    app.use(bodyParser.urlencoded({ extended: true }))
+    app.use(bodyParser.json())
 
-    const apolloServer = new ApolloServer({
-        typeDefs,
-        resolvers
-    })
+    app.use('/api', routes)
 
-    await apolloServer.start()
+    apolloServer.applyMiddleware({ app })
 
-    apolloServer.applyMiddleware({app})
-    
-    app.use('*', (req, res) => res.status(404).send('Not found'))
+    app.use(handle.error.notFound)
+    app.use(handle.error.productionErrors)
 
     const PORT = process.env.PORT || 8080
-
     app.listen(PORT, () =>
-    console.log(`Server running on port: ${PORT}`)
-    )
-}
+    console.log(
+        '\x1b[34m%s\x1b[0m',
+        `
+    ${app.get('env').toUpperCase()}
 
+    REST      → http://localhost:${PORT}/api/
+    GraphQL   → http://localhost:${PORT}${apolloServer.graphqlPath}/
+    Database  → ${mongoose.connection.host}/${mongoose.connection.name}
+    `,
+    ),
+    )
+
+}
 
 start()
 
