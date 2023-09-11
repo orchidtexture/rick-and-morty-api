@@ -4,6 +4,7 @@ const path = require('path')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const { ApolloServer } = require('apollo-server-express')
 
 const app = express()
@@ -34,10 +35,13 @@ async function start() {
     } catch (error) {
         console.log(error)
     }
+
+    app.use(cors())
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
 
     app.use('/api', routes)
+
 
     apolloServer.applyMiddleware({ app })
 
