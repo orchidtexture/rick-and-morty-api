@@ -1,5 +1,4 @@
-// const baseUrl = 'https://rickandmortyapi.com/api'
-const baseUrl = 'http://localhost:8080/api'
+const baseUrl = process.env.BASE_URL
 
 const message = {
   noPage: 'There is nothing here',
