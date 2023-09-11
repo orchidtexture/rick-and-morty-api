@@ -1,10 +1,5 @@
 const checkArray = (res) => (Array.isArray(res) ? res : [res])
 
-const urlToId = (url) => {
-  const getId = (str) => parseInt(str.match(/\d+$/))
-  return Array.isArray(url) ? url.map((item) => getId(item)) : getId(url)
-}
-
 const handleInfo = ({ stats }) => {
   const getPage = (url) => {
     const params = new URL(url)
@@ -32,7 +27,7 @@ const resolvers = {
       return dataSources.character.charactersByIds({ ids }).catch((error) => [])
     },
     character: async (_, { id }, { dataSources }) => {
-      return dataSources.character.character({ id }).catch((error) => null)
+        return dataSources.character.character({ id }).catch((error) => null)
     },
     locations: async (_, { page, filter }, { dataSources }) => {
       const { results, info: stats } = await dataSources.location
@@ -64,31 +59,22 @@ const resolvers = {
   },
   Character: {
     episode: async ({ episode }, _, { dataSources }) => {
-      const res = await dataSources.episode.episode({ id: urlToId(episode) })
+        const res = await dataSources.episode.episode({ id: episode[0] })
       return checkArray(res)
     },
-    location: async ({ location }, _, { dataSources }) => {
-      if (location.name === 'unknown') return location
-      const res = await dataSources.location.location({ id: urlToId(location.url) })
-      return res
-    },
-    origin: async ({ origin }, _, { dataSources }) => {
-      if (origin.name === 'unknown') return origin
-      const res = await dataSources.location.location({ id: urlToId(origin.url) })
-      return res
-    },
+    location: async ({ location }) => {return location},
+    origin: async ({ origin }) => { return origin },
   },
   Location: {
     residents: async ({ residents }, _, { dataSources }) => {
       if (!residents || (residents && !residents.length)) return []
-      const res = await dataSources.character.character({ id: urlToId(residents) })
+      const res = await dataSources.character.charactersByIds({ ids: residents })
       return checkArray(res)
     },
   },
   Episode: {
     characters: async ({ characters }, _, { dataSources }) => {
-      const res = await dataSources.character.character({ id: urlToId(characters) })
-      return checkArray(res)
+        return await dataSources.character.charactersByIds({ ids: characters })
     },
   },
 }

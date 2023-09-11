@@ -19,7 +19,7 @@ async function start() {
     const apolloServer = new ApolloServer({
         typeDefs,
         resolvers,
-        // validationRules: [handle.depth(1)],
+        // validationRules: [handle.depth(2)],
         dataSources: () => ({
             character: new Character(),
             location: new Location(),
@@ -30,9 +30,7 @@ async function start() {
     await apolloServer.start();
 
     try {
-        console.log(process.env.DATABASE)
         await mongoose.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true })
-        // mongoose.Promise = global.Promise
     } catch (error) {
         console.log(error)
     }
@@ -49,14 +47,7 @@ async function start() {
     const PORT = process.env.PORT || 8080
     app.listen(PORT, () =>
     console.log(
-        '\x1b[34m%s\x1b[0m',
-        `
-    ${app.get('env').toUpperCase()}
-
-    REST      → http://localhost:${PORT}/api/
-    GraphQL   → http://localhost:${PORT}${apolloServer.graphqlPath}/
-    Database  → ${mongoose.connection.host}/${mongoose.connection.name}
-    `,
+    `Database connected: ${mongoose.connection.host}/${mongoose.connection.name}`
     ),
     )
 

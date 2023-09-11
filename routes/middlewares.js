@@ -7,7 +7,6 @@ const sanitizeQueryParams = (model) => query(collection.queries[model]).trim()
 
 const generatePageUrls = (req, res, next) => {
   const { results, count, page } = req.payload
-  console.log(req.payload.page)
   const pages = Math.ceil(count / collection.limit)
 
   if (page > pages) {
@@ -52,7 +51,7 @@ const validateArrayParams = (req, res, next) => {
   }
 
   if (id.includes(',') && !/\[|\]/.test(id) && id.length > 1) {
-    req.params.id = id.split(',').map(Number)
+    req.params.id = id.split(',')
     return next()
   }
 
