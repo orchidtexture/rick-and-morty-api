@@ -20,7 +20,7 @@ async function start() {
     const apolloServer = new ApolloServer({
         typeDefs,
         resolvers,
-        // validationRules: [handle.depth(2)],
+        validationRules: [handle.depth(1)],
         dataSources: () => ({
             character: new Character(),
             location: new Location(),
